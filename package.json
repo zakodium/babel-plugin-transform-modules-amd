@@ -19,13 +19,16 @@
     "babel-plugin"
   ],
   "scripts": {
-    "test-only": "vitest --coverage"
+    "test-only": "vitest --coverage",
+    "prettier": "prettier --check .",
+    "prettier-write": "prettier --write ."
   },
   "devDependencies": {
     "@babel/helper-plugin-test-runner": "^7.27.1",
     "@babel/plugin-transform-destructuring": "^7.28.5",
     "@vitest/coverage-v8": "^4.0.16",
     "babel-plugin-tester": "^12.0.0",
+    "prettier": "^3.7.4",
     "vitest": "^4.0.16"
   },
   "volta": {
