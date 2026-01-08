@@ -9,6 +9,8 @@ on:
 jobs:
   nodejs:
     uses: zakodium/workflows/.github/workflows/nodejs.yml@nodejs-v1
+    secrets:
+      codecov-token: ${{ secrets.CODECOV_TOKEN }}
     with:
       lint-check-types: false
       lint-eslint: false
