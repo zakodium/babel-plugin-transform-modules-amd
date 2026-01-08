@@ -1,9 +1,6 @@
 # @zakodium/babel-plugin-transform-modules-amd
 
-[![Build Status](https://travis-ci.org/kayneb/babel-plugin-transform-es2015-modules-amd-if-required.svg?branch=master)](https://travis-ci.org/kayneb/babel-plugin-transform-es2015-modules-amd-if-required)
-[![Coverage Status](https://coveralls.io/repos/kayneb/babel-plugin-transform-es2015-modules-amd-if-required/badge.svg)](https://coveralls.io/r/kayneb/babel-plugin-transform-es2015-modules-amd-if-required)
-
-Transforms ES2015 modules to AMD modules, only if they aren't already AMD modules or require configs.
+Transforms modules / require to AMD modules, only if they aren't already AMD modules or require configs.
 
 ## Installation
 
@@ -13,9 +10,7 @@ $ npm install @zakodium/babel-plugin-transform-modules-amd
 
 ## Usage
 
-### Via `.babelrc` (Recommended)
-
-**babel.config.js**
+### Via `babel.config.js`
 
 ```js
 export default {
