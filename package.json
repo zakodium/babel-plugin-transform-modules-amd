@@ -1,6 +1,6 @@
 {
   "name": "@zakodium/babel-plugin-transform-modules-amd",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Transforms modules / CJS to AMD define statements",
   "repository": "https://github.com/zakodium/babel-plugin-transform-modules-amd",
   "license": "MIT",
