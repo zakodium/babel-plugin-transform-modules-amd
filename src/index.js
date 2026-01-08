@@ -1,24 +1,42 @@
-import template from "babel-template";
+import assert from "node:assert";
+import { smart as template } from "@babel/template";
+import modulesPlugin from "@babel/plugin-transform-modules-commonjs";
 
 let buildDefine = template(`
-  define(MODULE_NAME, [SOURCES], function (PARAMS) {
-    BODY;
+  define(%%MODULE_NAME%%, %%SOURCES%%, function (%%PARAMS%%) {
+    %%BODY%%;
   });
 `);
 
 export default function ({ types: t }) {
   function isValidRequireCall(path) {
     if (!path.isCallExpression()) return false;
-    if (!path.get("callee").isIdentifier({ name: "require" })) return false;
-    if (path.scope.getBinding("require")) return false;
+    if (!path.get("callee").isIdentifier({ name: "require" })) {
+      return false;
+    }
+    if (path.scope.getBinding("require")) {
+      return false;
+    }
 
     let args = path.get("arguments");
     if (args.length !== 1) return false;
 
     let arg = args[0];
-    if (!arg.isStringLiteral()) return false;
+    return arg.isStringLiteral();
+  }
 
-    return true;
+  function isValidDefaultRequire(path) {
+    if (!path.isCallExpression()) return false;
+    if (!path.get("callee").isIdentifier({ name: "_interopRequireDefault" }))
+      return false;
+
+    let args = path.get("arguments");
+    assert(
+      args.length === 1,
+      "Unexpected call to _interopRequireDefault with more than one argument",
+    );
+
+    return isValidRequireCall(args[0]);
   }
 
   function isValidDefine(path) {
@@ -26,8 +44,11 @@ export default function ({ types: t }) {
 
     let expr = path.get("expression");
     if (!expr.isCallExpression()) return false;
-    if (!expr.get("callee").isIdentifier({ name: "define" }) &&
-        !expr.get("callee").isIdentifier({ name: "require" })) return false;
+    if (
+      !expr.get("callee").isIdentifier({ name: "define" }) &&
+      !expr.get("callee").isIdentifier({ name: "require" })
+    )
+      return false;
 
     let args = expr.get("arguments");
     if (args.length === 3 && !args.shift().isStringLiteral()) return false;
@@ -39,6 +60,7 @@ export default function ({ types: t }) {
         return true;
       }
     } else if (firstArg.isFunctionExpression()) {
+      console.log("there");
       return true;
     }
 
@@ -51,8 +73,11 @@ export default function ({ types: t }) {
     let expr = path.get("expression");
     if (!expr.isCallExpression()) return false;
 
-    if (!expr.get("callee").get('object').isIdentifier({ name: "require" }) ||
-      !expr.get("callee").get('property').isIdentifier({ name: "config" })) return false;
+    if (
+      !expr.get("callee").get("object").isIdentifier({ name: "require" }) ||
+      !expr.get("callee").get("property").isIdentifier({ name: "config" })
+    )
+      return false;
 
     return true;
   }
@@ -76,21 +101,38 @@ export default function ({ types: t }) {
 
     VariableDeclarator(path) {
       let id = path.get("id");
-      if (!id.isIdentifier()) return;
+      if (!id.isIdentifier()) {
+        return;
+      }
 
       let init = path.get("init");
-      if (!isValidRequireCall(init)) return;
 
-      let source = init.node.arguments[0];
-      this.sourceNames[source.value] = true;
-      this.sources.push([id.node, source]);
+      if (isValidRequireCall(init)) {
+        let dependency = init.node.arguments[0];
+        this.sourceNames[dependency.value] = true;
+        this.sources.push({
+          moduleParam: id.node,
+          dependency,
+          identifier: null,
+        });
+        path.remove();
+      }
 
-      path.remove();
-    }
+      if (isValidDefaultRequire(init)) {
+        let dependency = init.node.arguments[0].arguments[0];
+        this.sources.push({
+          moduleParam: { type: "Identifier", name: `${id.node.name}Module` },
+          dependency,
+          identifier: id.node,
+        });
+        path.remove();
+      }
+    },
   };
 
   return {
-    inherits: require("babel-plugin-transform-es2015-modules-commonjs"),
+    name: "transform-modules-amd",
+    inherits: modulesPlugin,
 
     pre() {
       // source strings
@@ -110,42 +152,52 @@ export default function ({ types: t }) {
           if (this.ran) return;
           this.ran = true;
 
-          let body = path.get("body")
-          let last = body[body.length - 1];
+          let body = path.get("body");
           for (var i = 0; i < body.length; i++) {
             if (isValidDefine(body[i]) || isValidRequireConfig(body[i])) return;
           }
-          
+
           path.traverse(amdVisitor, this);
 
-          let params = this.sources.map(source => source[0]);
-          let sources = this.sources.map(source => source[1]);
+          let params = this.sources.map((source) => source.moduleParam);
+          let dependencies = this.sources.map((source) => source.dependency);
+          let interopCalls = this.sources
+            .filter((source) => source.identifier !== null)
+            .map(({ moduleParam, identifier }) => {
+              return template.ast`let ${identifier.name} = _interopRequireDefault(${moduleParam.name});`;
+            });
 
-          sources = sources.concat(this.bareSources.filter((str) => {
-            return !this.sourceNames[str.value];
-          }));
+          dependencies = dependencies.concat(
+            this.bareSources.filter((str) => {
+              return !this.sourceNames[str.value];
+            }),
+          );
 
           let moduleName = this.getModuleName();
           if (moduleName) moduleName = t.stringLiteral(moduleName);
 
           if (this.hasExports) {
-            sources.unshift(t.stringLiteral("exports"));
+            dependencies.unshift(t.stringLiteral("exports"));
             params.unshift(t.identifier("exports"));
           }
 
           if (this.hasModule) {
-            sources.unshift(t.stringLiteral("module"));
+            dependencies.unshift(t.stringLiteral("module"));
             params.unshift(t.identifier("module"));
           }
 
-          path.node.body = [buildDefine({
-            MODULE_NAME: moduleName,
-            SOURCES: sources,
-            PARAMS: params,
-            BODY: path.node.body
-          })];
-        }
-      }
-    }
+          path.node.body.unshift(...interopCalls);
+
+          path.node.body = [
+            buildDefine({
+              MODULE_NAME: moduleName,
+              SOURCES: t.arrayExpression(dependencies),
+              PARAMS: params,
+              BODY: path.node.body,
+            }),
+          ];
+        },
+      },
+    },
   };
 }
