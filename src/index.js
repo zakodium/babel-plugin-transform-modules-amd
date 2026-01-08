@@ -132,7 +132,12 @@ export default function ({ types: t }) {
 
   return {
     name: "transform-modules-amd",
-    inherits: modulesPlugin,
+    inherits:
+      typeof modulesPlugin === "function"
+        ? // Vitest adds interoperability
+          modulesPlugin
+        : // Published package doesn't
+          modulesPlugin?.default,
 
     pre() {
       // source strings
