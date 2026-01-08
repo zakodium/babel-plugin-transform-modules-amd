@@ -1,4 +1,4 @@
-# babel-plugin-transform-es2015-modules-amd-if-required
+# @zakodium/babel-plugin-transform-modules-amd
 
 [![Build Status](https://travis-ci.org/kayneb/babel-plugin-transform-es2015-modules-amd-if-required.svg?branch=master)](https://travis-ci.org/kayneb/babel-plugin-transform-es2015-modules-amd-if-required)
 [![Coverage Status](https://coveralls.io/repos/kayneb/babel-plugin-transform-es2015-modules-amd-if-required/badge.svg)](https://coveralls.io/r/kayneb/babel-plugin-transform-es2015-modules-amd-if-required)
@@ -8,33 +8,40 @@ Transforms ES2015 modules to AMD modules, only if they aren't already AMD module
 ## Installation
 
 ```sh
-$ npm install babel-plugin-transform-es2015-modules-amd-if-required
+$ npm install @zakodium/babel-plugin-transform-modules-amd
 ```
 
 ## Usage
 
 ### Via `.babelrc` (Recommended)
 
-**.babelrc**
+**babel.config.js**
 
-```json
-{
-  "plugins": ["transform-es2015-modules-amd-if-required"]
+```js
+export default {
+  plugins: [
+    // This extra plugin is needed if you want to support destructuring when requiring modules
+    '@babel/plugin-transform-destructuring',
+    '@zakodium/babel-plugin-transform-modules-amd'
+  ]
 }
 ```
 
-### Via CLI
+## Supported syntax
 
-```sh
-$ babel --plugins transform-es2015-modules-amd-if-required script.js
-```
+```js
+// Import statements
+import 'foo';
+import foo from 'foo';
+import { foo } from './foo';
+import { foo as bar } from './foo';
 
-### Via Node API
-
-```javascript
-require("babel-core").transform("code", {
-  plugins: ["transform-es2015-modules-amd-if-required"]
-});
+// require statements
+require('foo');
+const foo = require('foo');
+// ⚠️ Descructuring is not supported out of the box
+// Make sure to add an extra plugin to your babel config which transforms destructuring
+const { foo } = require('foo');
 ```
 
 # License
