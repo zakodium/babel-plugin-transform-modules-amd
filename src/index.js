@@ -60,7 +60,6 @@ export default function ({ types: t }) {
         return true;
       }
     } else if (firstArg.isFunctionExpression()) {
-      console.log("there");
       return true;
     }
 
