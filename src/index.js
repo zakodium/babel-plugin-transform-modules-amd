@@ -56,10 +56,16 @@ export default function ({ types: t }) {
     let firstArg = args.shift();
     if (firstArg.isArrayExpression()) {
       let secondArg = args.shift();
-      if (secondArg.isFunctionExpression()) {
+      if (
+        secondArg.isFunctionExpression() ||
+        secondArg.isArrowFunctionExpression()
+      ) {
         return true;
       }
-    } else if (firstArg.isFunctionExpression()) {
+    } else if (
+      firstArg.isFunctionExpression() ||
+      firstArg.isArrowFunctionExpression()
+    ) {
       return true;
     }
 
