@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.0.1...v1.0.2) (2026-01-09)
+
+
+### Bug Fixes
+
+* remove log ([#7](https://github.com/zakodium/babel-plugin-transform-modules-amd/issues/7)) ([3360264](https://github.com/zakodium/babel-plugin-transform-modules-amd/commit/3360264c2ab84140258b049b4420223dbce373a3))
+
 ## [1.0.1](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.0.0...v1.0.1) (2026-01-08)
 
 
