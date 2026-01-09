@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.0.2...v1.1.0) (2026-01-09)
+
+
+### Features
+
+* add support for arrow functions in define callback ([#9](https://github.com/zakodium/babel-plugin-transform-modules-amd/issues/9)) ([83cbda0](https://github.com/zakodium/babel-plugin-transform-modules-amd/commit/83cbda0a36ba117d1bd25aec8c602ab7af373b42))
+
 ## [1.0.2](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.0.1...v1.0.2) (2026-01-09)
 
 
