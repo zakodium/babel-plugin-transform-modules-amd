@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.1.0...v1.1.1) (2026-01-20)
+
+
+### Bug Fixes
+
+* support all import / export statements and remove .js extensions ([#11](https://github.com/zakodium/babel-plugin-transform-modules-amd/issues/11)) ([fc538fa](https://github.com/zakodium/babel-plugin-transform-modules-amd/commit/fc538fa683dd19eb945a5604b673c35e9466252a))
+
 ## [1.1.0](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.0.2...v1.1.0) (2026-01-09)
 
 
