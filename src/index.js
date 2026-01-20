@@ -25,7 +25,22 @@ export default function ({ types: t }) {
     return arg.isStringLiteral();
   }
 
-  function isValidDefaultRequire(path) {
+  function isValidRequireStar(path) {
+    // var foo = _interopRequireWildcard(require("foo"));
+    if (!path.isCallExpression()) return false;
+    if (!path.get("callee").isIdentifier({ name: "_interopRequireWildcard" }))
+      return false;
+
+    let args = path.get("arguments");
+    assert(
+      args.length === 1,
+      "Unexpected call to _interopRequireWildcard with more than one argument",
+    );
+
+    return isValidRequireCall(args[0]);
+  }
+
+  function isValidRequireDefault(path) {
     if (!path.isCallExpression()) return false;
     if (!path.get("callee").isIdentifier({ name: "_interopRequireDefault" }))
       return false;
@@ -123,12 +138,24 @@ export default function ({ types: t }) {
         path.remove();
       }
 
-      if (isValidDefaultRequire(init)) {
+      if (isValidRequireDefault(init)) {
         let dependency = init.node.arguments[0].arguments[0];
         this.sources.push({
           moduleParam: { type: "Identifier", name: `${id.node.name}Module` },
           dependency,
           identifier: id.node,
+          interop: "_interopRequireDefault",
+        });
+        path.remove();
+      }
+
+      if (isValidRequireStar(init)) {
+        let dependency = init.node.arguments[0].arguments[0];
+        this.sources.push({
+          moduleParam: { type: "Identifier", name: `${id.node.name}Module` },
+          dependency,
+          identifier: id.node,
+          interop: "_interopRequireWildcard",
         });
         path.remove();
       }
@@ -172,9 +199,9 @@ export default function ({ types: t }) {
           let params = this.sources.map((source) => source.moduleParam);
           let dependencies = this.sources.map((source) => source.dependency);
           let interopCalls = this.sources
-            .filter((source) => source.identifier !== null)
-            .map(({ moduleParam, identifier }) => {
-              return template.ast`let ${identifier.name} = _interopRequireDefault(${moduleParam.name});`;
+            .filter((source) => source.interop)
+            .map(({ moduleParam, identifier, interop }) => {
+              return template.ast`let ${identifier.name} = ${interop}(${moduleParam.name});`;
             });
 
           dependencies = dependencies.concat(
@@ -182,6 +209,10 @@ export default function ({ types: t }) {
               return !this.sourceNames[str.value];
             }),
           );
+
+          for (let dependency of dependencies) {
+            dependency.value = dependency.value.replace(/\.js$/, "");
+          }
 
           let moduleName = this.getModuleName();
           if (moduleName) moduleName = t.stringLiteral(moduleName);

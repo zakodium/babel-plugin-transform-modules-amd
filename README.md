@@ -39,19 +39,16 @@ export default {
 
 ## Supported syntax
 
-```js
-// Import statements
-import "foo";
-import foo from "foo";
-import { foo } from "./foo";
-import { foo as bar } from "./foo";
+All [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) and [export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export) statements are supported, but some require to setup your babel config with additional plugins to work.
 
-// require statements
-require("foo");
-const foo = require("foo");
+```js
 // ⚠️ Descructuring is not supported out of the box
-// Make sure to add an extra plugin to your babel config which transforms destructuring
+// Make sure to add "@babel/plugin-transform-destructuring" plugin to your babel config
 const { foo } = require("foo");
+
+// ⚠️ Exporting to a namespace is not supported out of the box
+// Make sure add the "@babel/plugin-transform-export-namespace-from" plugin to your babel config
+export * as foo from "./foo";
 ```
 
 # License

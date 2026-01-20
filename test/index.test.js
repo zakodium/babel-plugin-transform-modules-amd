@@ -10,6 +10,9 @@ pluginTester({
   fixtures: "fixtures",
   babelOptions: {
     parserOpts: { strictMode: true },
-    plugins: ["@babel/plugin-transform-destructuring"],
+    plugins: [
+      "@babel/plugin-transform-destructuring",
+      "@babel/plugin-transform-export-namespace-from",
+    ],
   },
 });
