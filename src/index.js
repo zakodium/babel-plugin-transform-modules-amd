@@ -210,6 +210,10 @@ export default function ({ types: t }) {
             }),
           );
 
+          for (let dependency of dependencies) {
+            dependency.value = dependency.value.replace(/\.js$/, "");
+          }
+
           let moduleName = this.getModuleName();
           if (moduleName) moduleName = t.stringLiteral(moduleName);
 
