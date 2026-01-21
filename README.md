@@ -27,11 +27,13 @@ $ npm install @zakodium/babel-plugin-transform-modules-amd
 
 ### Via `babel.config.js`
 
+This is the recommended configuration to support all import, export and CJS require statements.
+
 ```js
 export default {
   plugins: [
-    // This extra plugin is needed if you want to support destructuring when requiring modules
     "@babel/plugin-transform-destructuring",
+    "@babel/plugin-transform-export-namespace-from",
     "@zakodium/babel-plugin-transform-modules-amd",
   ],
 };
@@ -42,13 +44,13 @@ export default {
 All [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) and [export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export) statements are supported, but some require to setup your babel config with additional plugins to work.
 
 ```js
-// ⚠️ Descructuring is not supported out of the box
-// Make sure to add "@babel/plugin-transform-destructuring" plugin to your babel config
-const { foo } = require("foo");
+// ⚠️ Descructuring in CJS require statements is not supported out of the box.
+// Use the "@babel/plugin-transform-destructuring" plugin in your babel config to support this syntax.
+const { foo } = require('bar');
 
-// ⚠️ Exporting to a namespace is not supported out of the box
-// Make sure add the "@babel/plugin-transform-export-namespace-from" plugin to your babel config
-export * as foo from "./foo";
+// ⚠️ Star exports to a namespace is not supported out of the box.
+// Use the "@babel/plugin-transform-export-namespace-from" plugin in your babel config to support this syntax.
+export * as foo from 'bar';
 ```
 
 # License
