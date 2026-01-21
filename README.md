@@ -46,11 +46,11 @@ All [import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/S
 ```js
 // ⚠️ Descructuring in CJS require statements is not supported out of the box.
 // Use the "@babel/plugin-transform-destructuring" plugin in your babel config to support this syntax.
-const { foo } = require('bar');
+const { foo } = require("bar");
 
 // ⚠️ Star exports to a namespace is not supported out of the box.
 // Use the "@babel/plugin-transform-export-namespace-from" plugin in your babel config to support this syntax.
-export * as foo from 'bar';
+export * as foo from "bar";
 ```
 
 # License
