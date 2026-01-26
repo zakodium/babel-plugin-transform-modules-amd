@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.1.1...v1.1.2) (2026-01-26)
+
+
+### Bug Fixes
+
+* do not replace .js extension on URLs ([#14](https://github.com/zakodium/babel-plugin-transform-modules-amd/issues/14)) ([bbf5b44](https://github.com/zakodium/babel-plugin-transform-modules-amd/commit/bbf5b449c57f98162c38b20724b22bbf845763cc))
+
 ## [1.1.1](https://github.com/zakodium/babel-plugin-transform-modules-amd/compare/v1.1.0...v1.1.1) (2026-01-20)
 
 
