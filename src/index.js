@@ -211,7 +211,9 @@ export default function ({ types: t }) {
           );
 
           for (let dependency of dependencies) {
-            dependency.value = dependency.value.replace(/\.js$/, "");
+            if (!URL.canParse(dependency.value)) {
+              dependency.value = dependency.value.replace(/\.js$/, "");
+            }
           }
 
           let moduleName = this.getModuleName();
